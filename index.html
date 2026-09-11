@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Who Is More Useless? The ultimate retro 8-bit uselessness adventure game for two players!">
+  <title>Who Is More Useless? — Retro Arcade Experience</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Sky & Landscape Environment -->
+  <div class="sky-environment" aria-hidden="true">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
+    <div class="hill hill-1"></div>
+    <div class="hill hill-2"></div>
+    <div class="ground">
+      <div class="grass-stripe"></div>
+    </div>
+  </div>
+
+  <!-- Screen 1: Home / Landing -->
+  <section id="home" class="screen active" aria-labelledby="home-title">
+    <div class="container">
+      <div class="badge-row" aria-hidden="true">🍄 🪙 ⭐ 🤡</div>
+      <h1 id="home-title" class="game-title">WHO IS<br>MORE USELESS?</h1>
+      <div class="subtitle">THE ULTIMATE USELESSNESS ADVENTURE</div>
+      
+      <div class="manglish-hero-quote">
+        “Welcome da, legends. Innu nammal kandupidikkum… NINGALIL AARAA KURACHU KOODE USELESS?” 💀
+      </div>
+      <p style="font-size: 15px; color: #ffd859; font-weight: 700; margin-bottom: 20px;">
+        Please keep your expectations low. Actually… keep them at zero.
+      </p>
+
+      <div class="brain-status-box" id="brain-status">
+        🧠 System: Loading Brain… <span id="brain-status-text">Brain disconnected. Okay. Continue. 😭</span>
+      </div>
+      
+      <button id="btn-start" class="pixel-btn" onclick="app.showScreen('setup')">
+        ▶ PRESS START DA
+      </button>
+
+      <div class="disclaimer-tag">⚠️ SCIENTIFICALLY UNVERIFIED • 100% RETRO MANGLISH ⚠️</div>
+    </div>
+  </section>
+
+  <!-- Screen 2: Setup Players -->
+  <section id="setup" class="screen" aria-labelledby="setup-title">
+    <div class="container">
+      <div class="panel">
+        <h2 id="setup-title">CHOOSE YOUR USELESS HEROES</h2>
+        
+        <div class="player-grid">
+          <div class="player-card-input">
+            <h3>PLAYER 01</h3>
+            <div class="avatar-preview" aria-hidden="true">🧑‍🚀</div>
+            <input type="text" id="p1-input" placeholder="Player 1 Name" value="Player 1" maxlength="16" aria-label="Player 1 Name">
+          </div>
+
+          <div class="player-card-input">
+            <h3>PLAYER 02</h3>
+            <div class="avatar-preview" aria-hidden="true">🧑‍🎤</div>
+            <input type="text" id="p2-input" placeholder="Player 2 Name" value="Player 2" maxlength="16" aria-label="Player 2 Name">
+          </div>
+        </div>
+
+        <p style="font-size: 16px; margin: 15px 0; color: #ffd859; font-weight: 900;">
+          ⚠️ Next stop: The Uselessness Face Scanner.
+        </p>
+
+        <button id="btn-goto-camera" class="pixel-btn" onclick="app.beginFaceCapture()">
+          📸 CAPTURE PLAYERS
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screen 3: Camera Scanner -->
+  <section id="camera" class="screen" aria-labelledby="camera-title">
+    <div class="container">
+      <div class="panel">
+        <h2 id="camera-title">📸 USELESSNESS FACE SCANNER</h2>
+        <div class="manglish-hero-quote" style="font-size: 15px; margin-bottom: 15px;">
+          “Face scanner starting… Face kandappo systeminu oru doubt vannu. Ithu player aano… atho side character aano?” 😂
+        </div>
+        <p style="font-size: 14px; color: #ffd859; font-weight: 900; margin-bottom: 20px;">
+          “Straight aayi nokku da. Smile cheyyanda. Ningal serious aavan nokkumbol aanu comedy kooduthal.”
+        </p>
+
+        <div class="camera-grid">
+          <!-- Player 1 Camera Card -->
+          <div class="camera-card">
+            <h3>PLAYER 01<br><span id="cam-name-1">Player 1</span></h3>
+            <img id="face-thumb-1" class="captured-thumb" alt="Player 1 Avatar Thumbnail">
+            <div class="camera-box">
+              <video id="video-1" autoplay playsinline muted></video>
+              <canvas id="canvas-1" style="display: none;"></canvas>
+              <div id="scan-laser-1" class="scan-laser"></div>
+              <div id="cam-placeholder-1" class="camera-placeholder">
+                <span style="font-size: 32px;">📷</span>
+                <span>Camera Preview</span>
+              </div>
+            </div>
+            <div class="mini-btn-group">
+              <button class="small-btn" onclick="app.captureFace(0)">📸 SNAP</button>
+              <button class="small-btn secondary" onclick="app.retakeFace(0)">↻ RETAKE</button>
+            </div>
+          </div>
+
+          <!-- Player 2 Camera Card -->
+          <div class="camera-card">
+            <h3>PLAYER 02<br><span id="cam-name-2">Player 2</span></h3>
+            <img id="face-thumb-2" class="captured-thumb" alt="Player 2 Avatar Thumbnail">
+            <div class="camera-box">
+              <video id="video-2" autoplay playsinline muted></video>
+              <canvas id="canvas-2" style="display: none;"></canvas>
+              <div id="scan-laser-2" class="scan-laser"></div>
+              <div id="cam-placeholder-2" class="camera-placeholder">
+                <span style="font-size: 32px;">📷</span>
+                <span>Camera Preview</span>
+              </div>
+            </div>
+            <div class="mini-btn-group">
+              <button class="small-btn" onclick="app.captureFace(1)">📸 SNAP</button>
+              <button class="small-btn secondary" onclick="app.retakeFace(1)">↻ RETAKE</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="camera-status" class="commentary-box">Camera initialization ready...</div>
+
+        <button id="btn-continue-game" class="pixel-btn" onclick="app.finishFaceCapture()" disabled>
+          ▶ ENTER THE LEVEL DA
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screen 4: Quiz Gameplay -->
+  <section id="game" class="screen" aria-labelledby="game-round-hud">
+    <div class="container">
+      <div class="hud-bar">
+        <span id="game-round-hud" class="hud-pill">LEVEL 1</span>
+        <div class="hud-pill active-player-badge">
+          <img id="active-player-photo" class="active-player-photo" alt="Active Player Face">
+          <span id="game-turn-hud">PLAYER 1 • 0% USELESS</span>
+        </div>
+        <span class="hud-pill">🪙 <b id="coin-counter">000</b></span>
+      </div>
+
+      <!-- Floating Court Alert Banner -->
+      <div id="court-alert-banner" class="court-alert-banner" style="display: none;">
+        <span id="court-alert-text">🚨 OBJECTION! That answer is too normal.</span>
+      </div>
+
+      <div class="panel">
+        <!-- Prominent Player Turn Spotlight -->
+        <div class="player-turn-spotlight">
+          <div class="turn-photo-frame">
+            <img id="game-player-photo" class="big-player-photo" alt="Active Player Big Photo">
+            <div class="turn-badge-tag">YOUR TURN</div>
+          </div>
+          <div class="turn-player-info">
+            <h2 id="turn-player-name" class="spotlight-player-name">PLAYER 1</h2>
+            <div id="turn-player-score" class="spotlight-score-pill">0% USELESS</div>
+          </div>
+        </div>
+
+        <div class="q-block" aria-hidden="true">?</div>
+        <h2 id="question-text" class="question-text">Question loading...</h2>
+        
+        <div id="answers-grid" class="answers-grid">
+          <!-- Answer buttons injected dynamically -->
+        </div>
+
+        <div id="game-commentary" class="commentary-box">Okay da… First question simple aanu. So naturally, ningal athu overthink cheyyum.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screen 5: Results & Scorecards -->
+  <section id="results" class="screen" aria-labelledby="results-title">
+    <div class="container">
+      <div class="panel">
+        <h2 id="results-title">🏰 USELESSNESS CASTLE 🏰</h2>
+        <div class="manglish-hero-quote" style="font-size: 16px; margin-bottom: 15px;">
+          “Okay… Enough personal trauma. IPPO RANDU PERUM FACE TO FACE.” 💀
+        </div>
+
+        <div id="winner-banner" class="winner-banner">NOBODY WINS</div>
+
+        <div id="scorecards-grid" class="scorecard-grid">
+          <!-- Scorecards injected dynamically -->
+        </div>
+
+        <!-- System Panic Calculation Box -->
+        <div id="panic-box" class="panic-box">
+          <div class="panic-title">⚡ CALCULATING FINAL USELESSNESS…</div>
+          <div class="panic-checklist">
+            <div>Checking phone addiction… <span style="color:#00ffcc;">✅ Bad</span></div>
+            <div>Checking procrastination… <span style="color:#00ffcc;">✅ Very bad</span></div>
+            <div>Checking common sense… <span style="color:#ff4747;">❌ Not available</span></div>
+            <div>Checking productivity… <span style="color:#ff4747;">❌ No records found</span></div>
+            <div>Checking excuses… <span style="color:#ffd859;">✅✅✅ MAXIMUM</span></div>
+          </div>
+          <div class="system-panic-msg">
+            🚨 SYSTEM PANIC: Wait… Wait… WAIT. Something is wrong. The score is too high! Calculator stopped responding. Even calculatorinu ivarde level thaangaan pattilla. 😭
+          </div>
+        </div>
+
+        <!-- The Twist & Verdict -->
+        <div class="verdict-box">
+          <h3 style="font-family: var(--font-pixel); font-size: 13px; color: #ffd859; margin-bottom: 12px;">
+            💀 THE TWIST & ROAST VERDICT
+          </h3>
+          <p id="verdict-text"></p>
+        </div>
+
+        <div id="badge-list" class="badge-list">
+          <!-- Badges injected dynamically -->
+        </div>
+
+        <!-- Interactive Touch Grass & Play Again -->
+        <div class="action-btn-group">
+          <button id="btn-touch-grass" class="pixel-btn secondary" onclick="app.touchGrass()">
+            🌱 TOUCH GRASS
+          </button>
+
+          <button class="pixel-btn" onclick="app.playAgainPrompt()">
+            🔁 PINNEYUM EE MANDATHARAM CHEYYANO?
+          </button>
+        </div>
+
+        <div class="best-final-line">
+          “Life-il orupaadu useful things und cheyyan… Pakshe ningal ivide vannu… WHO IS MORE USELESS? Honestly da… both of you.” 😂🔥
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- App Script -->
+  <script src="app.js?v=4"></script>
+</body>
+</html>
+</body>
+</html>
