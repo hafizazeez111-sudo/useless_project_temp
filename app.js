@@ -320,18 +320,6 @@ class UselessApp {
     }
   }
 
-  promptApiKey() {
-    const currentKey = window.ENV?.GEMINI_API_KEY || localStorage.getItem('GEMINI_API_KEY') || '';
-    const key = prompt("🔑 ENTER YOUR FREE GEMINI AI API KEY:\n(Get key at https://aistudio.google.com/app/apikey)", currentKey !== 'YOUR_GEMINI_API_KEY_HERE' ? currentKey : '');
-    if (key !== null) {
-      if (window.setGeminiApiKey(key)) {
-        alert("✅ Gemini API Key updated successfully! Gemini AI face scanner is ready.");
-      } else {
-        alert("⚠️ No key provided. Local fallback scanner will be used.");
-      }
-    }
-  }
-
   async analyzeFaceWithGemini(imageDataUrl, index) {
     const roastBox = document.getElementById(`ai-roast-${index + 1}`);
     const playerName = this.players[index];
@@ -342,10 +330,9 @@ class UselessApp {
       roastBox.innerHTML = `🤖 Gemini AI analyzing ${playerName}'s facial expression & generating custom quiz...`;
     }
 
-    const apiKey = window.ENV?.GEMINI_API_KEY || localStorage.getItem('GEMINI_API_KEY');
+    const apiKey = window.ENV?.GEMINI_API_KEY || '';
     
     if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
-      console.warn("Gemini API Key missing or placeholder. Using funny local AI fallback.");
       setTimeout(() => this.applyLocalFallbackRoast(index), 800);
       return;
     }
