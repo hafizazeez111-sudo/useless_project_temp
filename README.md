@@ -72,8 +72,8 @@ graph TD
 
 ### Project Demo
 # Video
-[Live Web Application](https://useless-project-temp-g4bza2u7s-hafizazeez.vercel.app/)
-*Live Interactive Demo: Test your face uselessness in real-time!*
+[Project Demo Video](https://drive.google.com/file/d/1saf2m4dpHcHGGsBIHQIAMjczjNElD6jV/view?usp=drive_link)
+*Demonstrates webcam face capture, live Gemini AI face roast analysis, dynamic AI quiz questions, and score calculations.*
 
 # Additional Demos
 ![Final Results & Roast Verdict](./result.png)
