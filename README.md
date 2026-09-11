@@ -49,13 +49,13 @@ npx vercel dev
 For Software:
 
 # Screenshots
-![Landing Page](https://github.com/user-attachments/assets/8920b256-2ba8-4988-b824-5351134eb4bd)
+![Landing Page](./mainpage.png)
 *Screen 1: Retro 8-bit Landing Screen with Manglish Hero Quote*
 
-![Face Scanner](https://github.com/user-attachments/assets/8920b256-2ba8-4988-b824-5351134eb4bd)
+![Face Scanner](./face_analyzer.png)
 *Screen 2: Gemini 1.5 Flash AI Face Scanner & Live Expression Roast*
 
-![Quiz Gameplay](https://github.com/user-attachments/assets/8920b256-2ba8-4988-b824-5351134eb4bd)
+![Quiz Gameplay](./questions.png)
 *Screen 3: Dynamic AI Quiz Gameplay with Turn Spotlight & Coin Explosion*
 
 # Diagrams
@@ -76,6 +76,10 @@ graph TD
 *Live Interactive Demo: Test your face uselessness in real-time!*
 
 # Additional Demos
+![Final Results & Roast Verdict](./result.png)
+*Screen 4: Uselessness Castle Final Scorecard & Twist Verdict*
+
+- [Live Web Application](https://useless-project-temp.vercel.app/)
 - [GitHub Repository](https://github.com/hafizazeez111-sudo/useless_project_temp)
 
 ## Team Contributions
