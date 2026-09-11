@@ -79,7 +79,8 @@ graph TD
 - [GitHub Repository](https://github.com/hafizazeez111-sudo/useless_project_temp)
 
 ## Team Contributions
-- Hafiz Azeez: Concept design, Retro 8-bit UI/UX, Web Audio API synthesizer, Gemini 1.5 Flash AI Integration, Vercel Serverless Proxy setup.
+- Hafiz Azeez: Concept design, Retro 8-bit UI/UX, Web Audio API synthesizer
+- Thamir: Gemini 1.5 Flash AI Integration, Vercel Serverless Proxy setup.
 
 ---
 Made with ❤️ at TinkerHub Useless Projects 
