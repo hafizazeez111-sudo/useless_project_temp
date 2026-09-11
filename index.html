@@ -43,7 +43,13 @@
         ▶ PRESS START DA
       </button>
 
-      <div class="disclaimer-tag">⚠️ SCIENTIFICALLY UNVERIFIED • 100% RETRO MANGLISH ⚠️</div>
+      <div style="margin-top: 8px;">
+        <button class="small-btn secondary" style="font-size: 10px; padding: 8px 14px;" onclick="app.promptApiKey()">
+          🔑 GEMINI API KEY SETUP
+        </button>
+      </div>
+
+      <div class="disclaimer-tag">⚠️ SCIENTIFICALLY UNVERIFIED • 100% RETRO MANGLISH • POWERED BY GEMINI AI 🤖</div>
     </div>
   </section>
 
@@ -68,7 +74,7 @@
         </div>
 
         <p style="font-size: 16px; margin: 15px 0; color: #ffd859; font-weight: 900;">
-          ⚠️ Next stop: The Uselessness Face Scanner.
+          ⚠️ Next stop: Gemini AI Uselessness Face Scanner.
         </p>
 
         <button id="btn-goto-camera" class="pixel-btn" onclick="app.beginFaceCapture()">
@@ -82,9 +88,10 @@
   <section id="camera" class="screen" aria-labelledby="camera-title">
     <div class="container">
       <div class="panel">
+        <div class="gemini-header-badge">🤖 GEMINI 1.5 FLASH AI SCANNER ACTIVE</div>
         <h2 id="camera-title">📸 USELESSNESS FACE SCANNER</h2>
         <div class="manglish-hero-quote" style="font-size: 15px; margin-bottom: 15px;">
-          “Face scanner starting… Face kandappo systeminu oru doubt vannu. Ithu player aano… atho side character aano?” 😂
+          “Face scanner starting… Gemini AI is evaluating facial overthinking levels in real time.” 😂
         </div>
         <p style="font-size: 14px; color: #ffd859; font-weight: 900; margin-bottom: 20px;">
           “Straight aayi nokku da. Smile cheyyanda. Ningal serious aavan nokkumbol aanu comedy kooduthal.”
@@ -108,6 +115,7 @@
               <button class="small-btn" onclick="app.captureFace(0)">📸 SNAP</button>
               <button class="small-btn secondary" onclick="app.retakeFace(0)">↻ RETAKE</button>
             </div>
+            <div id="ai-roast-1" class="ai-roast-box" style="display: none;"></div>
           </div>
 
           <!-- Player 2 Camera Card -->
@@ -127,6 +135,7 @@
               <button class="small-btn" onclick="app.captureFace(1)">📸 SNAP</button>
               <button class="small-btn secondary" onclick="app.retakeFace(1)">↻ RETAKE</button>
             </div>
+            <div id="ai-roast-2" class="ai-roast-box" style="display: none;"></div>
           </div>
         </div>
 
@@ -204,7 +213,7 @@
             <div>Checking procrastination… <span style="color:#00ffcc;">✅ Very bad</span></div>
             <div>Checking common sense… <span style="color:#ff4747;">❌ Not available</span></div>
             <div>Checking productivity… <span style="color:#ff4747;">❌ No records found</span></div>
-            <div>Checking excuses… <span style="color:#ffd859;">✅✅✅ MAXIMUM</span></div>
+            <div>Checking Gemini AI Face Vision… <span style="color:#ffd859;">🤖 100% USELESS DETECTED</span></div>
           </div>
           <div class="system-panic-msg">
             🚨 SYSTEM PANIC: Wait… Wait… WAIT. Something is wrong. The score is too high! Calculator stopped responding. Even calculatorinu ivarde level thaangaan pattilla. 😭
@@ -241,9 +250,8 @@
     </div>
   </section>
 
-  <!-- App Script -->
-  <script src="app.js?v=4"></script>
-</body>
-</html>
+  <!-- Environment & App Scripts -->
+  <script src="env.js"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

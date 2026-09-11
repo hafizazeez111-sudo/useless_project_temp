@@ -162,6 +162,7 @@ class UselessApp {
     this.scores = [0, 0];
     this.faces = [null, null];
     this.streams = [null, null];
+    this.geminiResults = [null, null];
     this.currentTurn = 0;
     this.currentQuestion = 0;
     this.coins = 0;
@@ -319,6 +320,126 @@ class UselessApp {
     }
   }
 
+  promptApiKey() {
+    const currentKey = window.ENV?.GEMINI_API_KEY || localStorage.getItem('GEMINI_API_KEY') || '';
+    const key = prompt("🔑 ENTER YOUR FREE GEMINI AI API KEY:\n(Get key at https://aistudio.google.com/app/apikey)", currentKey !== 'YOUR_GEMINI_API_KEY_HERE' ? currentKey : '');
+    if (key !== null) {
+      if (window.setGeminiApiKey(key)) {
+        alert("✅ Gemini API Key updated successfully! Gemini AI face scanner is ready.");
+      } else {
+        alert("⚠️ No key provided. Local fallback scanner will be used.");
+      }
+    }
+  }
+
+  async analyzeFaceWithGemini(imageDataUrl, index) {
+    const roastBox = document.getElementById(`ai-roast-${index + 1}`);
+    if (roastBox) {
+      roastBox.style.display = 'block';
+      roastBox.className = 'ai-roast-box loading';
+      roastBox.innerHTML = `🤖 Gemini AI analyzing facial uselessness levels...`;
+    }
+
+    const apiKey = window.ENV?.GEMINI_API_KEY || localStorage.getItem('GEMINI_API_KEY');
+    
+    if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
+      console.warn("Gemini API Key missing or placeholder. Using funny local AI fallback.");
+      setTimeout(() => this.applyLocalFallbackRoast(index), 800);
+      return;
+    }
+
+    try {
+      const base64Data = imageDataUrl.includes(',') ? imageDataUrl.split(',')[1] : imageDataUrl;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              {
+                inlineData: {
+                  mimeType: 'image/jpeg',
+                  data: base64Data
+                }
+              },
+              {
+                text: "You are the comedic AI announcer for a retro 8-bit game called 'Who Is More Useless?' for a Kerala/Manglish audience. Analyze this face image for uselessness. Respond ONLY with valid JSON (no markdown block wrapper) with strictly these 3 keys:\n{\n  \"uselessScore\": integer between 55 and 99,\n  \"faceRoast\": \"short, 2-sentence hilarious Manglish/English roast about their facial expression\",\n  \"uselessTitle\": \"3-5 word retro title in uppercase\"\n}"
+              }
+            ]
+          }],
+          generationConfig: {
+            temperature: 0.9,
+            maxOutputTokens: 250
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`API HTTP Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const cleanJsonStr = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(cleanJsonStr);
+
+      const uselessScore = parsed.uselessScore || Math.floor(Math.random() * 35) + 60;
+      const faceRoast = parsed.faceRoast || "Face expression shows 100% overthinking and 0% action.";
+      const uselessTitle = parsed.uselessTitle || "LEGENDARY TIME WASTER";
+
+      this.geminiResults[index] = { uselessScore, faceRoast, uselessTitle };
+
+      if (roastBox) {
+        roastBox.className = 'ai-roast-box';
+        roastBox.innerHTML = `
+          <span class="ai-title-tag">🤖 GEMINI AI SCAN: ${uselessTitle} (${uselessScore}%)</span>
+          "${faceRoast}"
+        `;
+      }
+    } catch (err) {
+      console.warn("Gemini API call failed, switching to local fallback:", err);
+      this.applyLocalFallbackRoast(index);
+    }
+  }
+
+  applyLocalFallbackRoast(index) {
+    const fallbackRoasts = [
+      {
+        uselessTitle: "CHRONIC REEL SCROLLER",
+        uselessScore: 88,
+        faceRoast: "Eda face kandappo thanne manassilaayi… 2 hours reel scroll cheythittaanu ivide ethiyath! Common sense level zero. 😂"
+      },
+      {
+        uselessTitle: "FRIDGE VISITOR SUPREME",
+        uselessScore: 94,
+        faceRoast: "Every 3 minutes fridge thurannu nokkunna face! Expecting DLC content inside empty fridge. 💀"
+      },
+      {
+        uselessTitle: "PROFESSIONAL OVERTHINKER",
+        uselessScore: 91,
+        faceRoast: "Serious facial expression detected! Thinking about task start cheyyan 3 business days delay. 😭"
+      },
+      {
+        uselessTitle: "BED GRAVITY VICTIM",
+        uselessScore: 96,
+        faceRoast: "5 minute rest edukkam ennu paranjittu 2 hours sleep mode-il poya legendary face! 🛌"
+      }
+    ];
+
+    const fallback = fallbackRoasts[index % fallbackRoasts.length];
+    this.geminiResults[index] = fallback;
+
+    const roastBox = document.getElementById(`ai-roast-${index + 1}`);
+    if (roastBox) {
+      roastBox.className = 'ai-roast-box';
+      roastBox.innerHTML = `
+        <span class="ai-title-tag">🤖 AI VISION: ${fallback.uselessTitle} (${fallback.uselessScore}%)</span>
+        "${fallback.faceRoast}"
+      `;
+    }
+  }
+
   captureFace(index) {
     this.playBlipSound();
     const video = document.getElementById(`video-${index + 1}`);
@@ -338,13 +459,16 @@ class UselessApp {
     thumb.src = this.faces[index];
     thumb.style.display = 'block';
 
+    // Trigger Gemini AI Analysis
+    this.analyzeFaceWithGemini(this.faces[index], index);
+
     const pName = this.players[index];
     const bothReady = this.faces[0] && this.faces[1];
     
     if (index === 0) {
-      document.getElementById('camera-status').textContent = `Face saved. Dignity not found. Camera quality 4K. Common sense quality 144p. Okay next victim… Sorry, next PLAYER! 😂`;
+      document.getElementById('camera-status').textContent = `Face saved. Gemini AI is analyzing expression... Okay next victim… Sorry, next PLAYER! 😂`;
     } else {
-      document.getElementById('camera-status').textContent = `Both players scanned! Intelligence check: 1%... Error. We will not continue this investigation. Ready to enter level!`;
+      document.getElementById('camera-status').textContent = `Both players scanned! Gemini AI analysis in progress. Ready to enter level!`;
     }
 
     if (bothReady) {
@@ -355,9 +479,15 @@ class UselessApp {
   retakeFace(index) {
     this.playBlipSound();
     this.faces[index] = null;
+    this.geminiResults[index] = null;
     const thumb = document.getElementById(`face-thumb-${index + 1}`);
     thumb.style.display = 'none';
     thumb.src = '';
+    const roastBox = document.getElementById(`ai-roast-${index + 1}`);
+    if (roastBox) {
+      roastBox.style.display = 'none';
+      roastBox.innerHTML = '';
+    }
     document.getElementById('btn-continue-game').disabled = !(this.faces[0] && this.faces[1]);
     document.getElementById('camera-status').textContent = `Retake face scan ready for ${this.players[index]}.`;
   }
@@ -560,17 +690,29 @@ class UselessApp {
 
     // Render scorecards
     const scoreGrid = document.getElementById('scorecards-grid');
-    scoreGrid.innerHTML = this.players.map((pName, idx) => `
-      <div class="scorecard">
-        <img src="${this.faces[idx] || ''}" class="captured-thumb" style="display: block;" alt="${pName}">
-        <h2>${pName}</h2>
-        <div class="score-percent">${this.scores[idx]}%</div>
-        <div class="score-title">${this.getUselessTitle(this.scores[idx])}</div>
-        <div class="progress-bar-container">
-          <div class="progress-bar-fill" id="pbar-${idx}"></div>
+    scoreGrid.innerHTML = this.players.map((pName, idx) => {
+      const gResult = this.geminiResults[idx];
+      const aiRoastHtml = gResult ? `
+        <div style="background: rgba(0,255,204,0.08); border: 2px dashed #00ffcc; border-radius: 8px; padding: 10px; margin-top: 12px; font-size: 13px; text-align: left;">
+          <div style="font-family: var(--font-pixel); font-size: 9px; color: #00ffcc;">🤖 GEMINI AI FACE ROAST</div>
+          <div style="color: #ffd859; font-weight: 900; margin-top: 4px;">"${gResult.uselessTitle}"</div>
+          <div style="font-size: 12px; margin-top: 4px; color: #fff;">${gResult.faceRoast}</div>
         </div>
-      </div>
-    `).join('');
+      ` : '';
+
+      return `
+        <div class="scorecard">
+          <img src="${this.faces[idx] || ''}" class="captured-thumb" style="display: block;" alt="${pName}">
+          <h2>${pName}</h2>
+          <div class="score-percent">${this.scores[idx]}%</div>
+          <div class="score-title">${gResult?.uselessTitle || this.getUselessTitle(this.scores[idx])}</div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="pbar-${idx}"></div>
+          </div>
+          ${aiRoastHtml}
+        </div>
+      `;
+    }).join('');
 
     setTimeout(() => {
       this.players.forEach((_, idx) => {
@@ -589,14 +731,17 @@ class UselessApp {
       compDiffMsg = `<b>Score Gap:</b> ${diff}% — “<b>${highestPlayer}</b>: Bro… Nee individually competition aanu da!”<br><br>`;
     }
 
+    const p1Roast = this.geminiResults[0]?.faceRoast || "Task start cheyyan 3 business days edukkum. CLASS: PREMIUM USELESS HUMAN™";
+    const p2Roast = this.geminiResults[1]?.faceRoast || "Study plan und, study illa. CLASS: LEGENDARY TIME WASTER™";
+
     document.getElementById('verdict-text').innerHTML = `
       ${compDiffMsg}
       <b>☠️ THE TWIST:</b><br>
       “One final calculation… You spent valuable time playing a game about wasting time! That time, you could have studied, worked, slept, or touched grass. But you chose… THIS. 😂”<br><br>
-      <b>🤖 PLAYER 1 ROAST:</b><br>
-      “Task start cheyyan 3 business days edukkum. Phone use kandappo phone aanu main character. Fridge visit tottally maxed out! CLASS: PREMIUM USELESS HUMAN™”<br><br>
-      <b>🤖 PLAYER 2 ROAST:</b><br>
-      “Study plan und, study illa. Sleep schedule und, sleep schedule aanu ath follow cheyyunnath 😭 Tomorrow-ne personal assistant aakki. CLASS: LEGENDARY TIME WASTER™”
+      <b>🤖 GEMINI AI ROAST (${this.players[0].toUpperCase()}):</b><br>
+      “${p1Roast}”<br><br>
+      <b>🤖 GEMINI AI ROAST (${this.players[1].toUpperCase()}):</b><br>
+      “${p2Roast}”
     `;
 
     document.getElementById('badge-list').innerHTML = `
