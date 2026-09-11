@@ -6,7 +6,8 @@
 ### Team Name: Useless Legends
 
 ### Team Members
-- Team Lead: Hafiz Azeez - College of Engineering
+- Team Lead: Hafiz Azeez - KMEA Engineering College
+- Member 2: Muhammed Thamir - KMEA Engineering College
 
 ### Project Description
 *Who Is More Useless?* is the ultimate retro 8-bit arcade adventure game where two players compete face-to-face to determine who is scientifically more useless! Powered by **Google Gemini 1.5 Flash Multimodal Vision AI**, the game captures players' faces via webcam, roasts their expressions in 100% retro Kerala Manglish, and dynamically generates custom quiz questions tailored to their face vibe.
