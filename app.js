@@ -334,10 +334,12 @@ class UselessApp {
 
   async analyzeFaceWithGemini(imageDataUrl, index) {
     const roastBox = document.getElementById(`ai-roast-${index + 1}`);
+    const playerName = this.players[index];
+
     if (roastBox) {
       roastBox.style.display = 'block';
       roastBox.className = 'ai-roast-box loading';
-      roastBox.innerHTML = `🤖 Gemini AI analyzing facial uselessness levels...`;
+      roastBox.innerHTML = `🤖 Gemini AI analyzing ${playerName}'s facial expression & generating custom quiz...`;
     }
 
     const apiKey = window.ENV?.GEMINI_API_KEY || localStorage.getItem('GEMINI_API_KEY');
@@ -350,6 +352,60 @@ class UselessApp {
 
     try {
       const base64Data = imageDataUrl.includes(',') ? imageDataUrl.split(',')[1] : imageDataUrl;
+
+      const promptText = `You are the hilarious retro 8-bit game master of 'Who Is More Useless?' for a Kerala/Manglish audience.
+Analyze this face image of ${playerName} and generate a funny personalized roast AND customized multiple-choice quiz questions tailored to their facial expression and vibe.
+
+Respond ONLY with valid JSON (strictly no markdown formatting or code block backticks) with this structure:
+{
+  "uselessScore": integer between 60 and 99,
+  "faceRoast": "short 2-sentence funny Manglish roast about their facial expression",
+  "uselessTitle": "3-5 word retro title in uppercase",
+  "questions": [
+    {
+      "level": "FACE VIBE ZONE 1",
+      "title": "📱 Funny Manglish question tailored to this face's expression",
+      "options": ["Option 1 (Normal)", "Option 2 (Slightly Useless)", "Option 3 (Very Useless)", "Option 4 (Maximum Uselessness)"],
+      "scores": [0, 8, 16, 25],
+      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
+    },
+    {
+      "level": "FACE VIBE ZONE 2",
+      "title": "🍛 Another funny Manglish question based on their face vibe",
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "scores": [0, 8, 16, 25],
+      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
+    },
+    {
+      "level": "FACE VIBE ZONE 3",
+      "title": "📚 Question about study/work procrastination tailored to face",
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "scores": [0, 8, 16, 25],
+      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
+    },
+    {
+      "level": "FACE VIBE ZONE 4",
+      "title": "😴 Question about sleeping/alarm struggles",
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "scores": [0, 8, 16, 25],
+      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
+    },
+    {
+      "level": "FACE VIBE ZONE 5",
+      "title": "🧊 Question about food/fridge habit",
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "scores": [0, 8, 16, 25],
+      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
+    },
+    {
+      "level": "FACE VIBE ZONE 6",
+      "title": "🎬 Question about social media/reels addiction",
+      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+      "scores": [0, 8, 16, 25],
+      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
+    }
+  ]
+}`;
 
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
         method: 'POST',
@@ -364,13 +420,13 @@ class UselessApp {
                 }
               },
               {
-                text: "You are the comedic AI announcer for a retro 8-bit game called 'Who Is More Useless?' for a Kerala/Manglish audience. Analyze this face image for uselessness. Respond ONLY with valid JSON (no markdown block wrapper) with strictly these 3 keys:\n{\n  \"uselessScore\": integer between 55 and 99,\n  \"faceRoast\": \"short, 2-sentence hilarious Manglish/English roast about their facial expression\",\n  \"uselessTitle\": \"3-5 word retro title in uppercase\"\n}"
+                text: promptText
               }
             ]
           }],
           generationConfig: {
-            temperature: 0.9,
-            maxOutputTokens: 250
+            temperature: 0.95,
+            maxOutputTokens: 1500
           }
         })
       });
@@ -390,11 +446,29 @@ class UselessApp {
 
       this.geminiResults[index] = { uselessScore, faceRoast, uselessTitle };
 
+      // Update quiz questions dynamically from Gemini AI generated questions!
+      if (Array.isArray(parsed.questions) && parsed.questions.length >= 3) {
+        const validatedQuestions = parsed.questions.map(q => ({
+          level: q.level || `FACE SCAN ZONE`,
+          title: q.title || `Personalized AI Question`,
+          options: Array.isArray(q.options) && q.options.length === 4 ? q.options : ["ഇല്ല", "ചിലപ്പോൾ", "സ്ഥിരം", "Maximum Useless"],
+          scores: Array.isArray(q.scores) && q.scores.length === 4 ? q.scores : [0, 8, 16, 25],
+          commentary: Array.isArray(q.commentary) && q.commentary.length === 4 ? q.commentary : ["Okay!", "Nice!", "Useless!", "Legend!"]
+        }));
+
+        if (index === 0) {
+          this.p1Questions = validatedQuestions;
+        } else {
+          this.p2Questions = validatedQuestions;
+        }
+      }
+
       if (roastBox) {
         roastBox.className = 'ai-roast-box';
         roastBox.innerHTML = `
           <span class="ai-title-tag">🤖 GEMINI AI SCAN: ${uselessTitle} (${uselessScore}%)</span>
           "${faceRoast}"
+          <div style="margin-top: 6px; font-size: 11px; color: #00ffcc;">✨ 6 Custom Face-Tailored Questions Generated by Gemini!</div>
         `;
       }
     } catch (err) {
