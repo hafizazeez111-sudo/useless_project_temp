@@ -330,102 +330,47 @@ class UselessApp {
       roastBox.innerHTML = `🤖 Gemini AI analyzing ${playerName}'s facial expression & generating custom quiz...`;
     }
 
-    const apiKey = window.ENV?.GEMINI_API_KEY || '';
-    
-    if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE') {
-      setTimeout(() => this.applyLocalFallbackRoast(index), 800);
-      return;
-    }
-
     try {
       const base64Data = imageDataUrl.includes(',') ? imageDataUrl.split(',')[1] : imageDataUrl;
 
-      const promptText = `You are the hilarious retro 8-bit game master of 'Who Is More Useless?' for a Kerala/Manglish audience.
-Analyze this face image of ${playerName} and generate a funny personalized roast AND customized multiple-choice quiz questions tailored to their facial expression and vibe.
-
-Respond ONLY with valid JSON (strictly no markdown formatting or code block backticks) with this structure:
-{
-  "uselessScore": integer between 60 and 99,
-  "faceRoast": "short 2-sentence funny Manglish roast about their facial expression",
-  "uselessTitle": "3-5 word retro title in uppercase",
-  "questions": [
-    {
-      "level": "FACE VIBE ZONE 1",
-      "title": "📱 Funny Manglish question tailored to this face's expression",
-      "options": ["Option 1 (Normal)", "Option 2 (Slightly Useless)", "Option 3 (Very Useless)", "Option 4 (Maximum Uselessness)"],
-      "scores": [0, 8, 16, 25],
-      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
-    },
-    {
-      "level": "FACE VIBE ZONE 2",
-      "title": "🍛 Another funny Manglish question based on their face vibe",
-      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-      "scores": [0, 8, 16, 25],
-      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
-    },
-    {
-      "level": "FACE VIBE ZONE 3",
-      "title": "📚 Question about study/work procrastination tailored to face",
-      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-      "scores": [0, 8, 16, 25],
-      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
-    },
-    {
-      "level": "FACE VIBE ZONE 4",
-      "title": "😴 Question about sleeping/alarm struggles",
-      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-      "scores": [0, 8, 16, 25],
-      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
-    },
-    {
-      "level": "FACE VIBE ZONE 5",
-      "title": "🧊 Question about food/fridge habit",
-      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-      "scores": [0, 8, 16, 25],
-      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
-    },
-    {
-      "level": "FACE VIBE ZONE 6",
-      "title": "🎬 Question about social media/reels addiction",
-      "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
-      "scores": [0, 8, 16, 25],
-      "commentary": ["Reaction 1", "Reaction 2", "Reaction 3", "Reaction 4"]
-    }
-  ]
-}`;
-
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+      // Call secure Vercel serverless function /api/analyze-face
+      const response = await fetch('/api/analyze-face', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              {
-                inlineData: {
-                  mimeType: 'image/jpeg',
-                  data: base64Data
-                }
-              },
-              {
-                text: promptText
-              }
-            ]
-          }],
-          generationConfig: {
-            temperature: 0.95,
-            maxOutputTokens: 1500
-          }
-        })
+        body: JSON.stringify({ base64Data, playerName })
       });
 
-      if (!response.ok) {
-        throw new Error(`API HTTP Error: ${response.status}`);
+      let parsed = null;
+      if (response.ok) {
+        parsed = await response.json();
+      } else {
+        // Fallback: If running locally without Vercel serverless functions, check local key
+        const apiKey = window.ENV?.GEMINI_API_KEY;
+        if (apiKey && apiKey !== 'YOUR_GEMINI_API_KEY_HERE') {
+          const directUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
+          const directResp = await fetch(directUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { inlineData: { mimeType: 'image/jpeg', data: base64Data } },
+                  { text: `Analyze face of ${playerName} for game 'Who Is More Useless?' and return JSON object with uselessScore, faceRoast, uselessTitle, and 6 questions.` }
+                ]
+              }]
+            })
+          });
+          if (directResp.ok) {
+            const rawData = await directResp.json();
+            const textStr = rawData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            parsed = JSON.parse(textStr.replace(/```json/g, '').replace(/```/g, '').trim());
+          }
+        }
       }
 
-      const data = await response.json();
-      const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      const cleanJsonStr = textResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleanJsonStr);
+      if (!parsed) {
+        throw new Error('Could not analyze face with Gemini');
+      }
 
       const uselessScore = parsed.uselessScore || Math.floor(Math.random() * 35) + 60;
       const faceRoast = parsed.faceRoast || "Face expression shows 100% overthinking and 0% action.";
