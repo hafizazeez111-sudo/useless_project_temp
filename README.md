@@ -72,14 +72,14 @@ graph TD
 
 ### Project Demo
 # Video
-[Live Web Application](https://useless-project-temp.vercel.app/)
+[Live Web Application](https://useless-project-temp-g4bza2u7s-hafizazeez.vercel.app/)
 *Live Interactive Demo: Test your face uselessness in real-time!*
 
 # Additional Demos
 ![Final Results & Roast Verdict](./result.png)
 *Screen 4: Uselessness Castle Final Scorecard & Twist Verdict*
 
-- [Live Web Application](https://useless-project-temp.vercel.app/)
+- [Live Web Application](https://useless-project-temp-g4bza2u7s-hafizazeez.vercel.app/)
 - [GitHub Repository](https://github.com/hafizazeez111-sudo/useless_project_temp)
 
 ## Team Contributions
